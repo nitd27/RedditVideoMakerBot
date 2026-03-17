@@ -6,6 +6,16 @@ from utils.ai_methods import sort_by_similarity
 from utils.console import print_substep
 
 
+def _contains_blocked_words(text: str) -> bool:
+    """Returns True if the text contains any blocked words from config."""
+    blocked_raw = settings.config["reddit"]["thread"].get("blocked_words", "")
+    if not blocked_raw:
+        return False
+    blocked = [w.strip().lower() for w in blocked_raw.split(",") if w.strip()]
+    text_lower = text.lower()
+    return any(word in text_lower for word in blocked)
+
+
 def get_subreddit_undone(submissions: list, subreddit, times_checked=0, similarity_scores=None):
     """_summary_
 
@@ -41,6 +51,9 @@ def get_subreddit_undone(submissions: list, subreddit, times_checked=0, similari
                 print_substep("NSFW settings not defined. Skipping NSFW post...")
         if submission.stickied:
             print_substep("This post was pinned by moderators. Skipping...")
+            continue
+        if _contains_blocked_words(submission.title + " " + (submission.selftext or "")):
+            print_substep("Post contains a blocked word. Skipping...")
             continue
         if (
             submission.num_comments <= int(settings.config["reddit"]["thread"]["min_comments"])
