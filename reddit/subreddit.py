@@ -8,7 +8,7 @@ from utils import settings
 from utils.ai_methods import sort_by_similarity
 from utils.console import print_step, print_substep
 from utils.posttextparser import posttextparser
-from utils.subreddit import get_subreddit_undone, _contains_blocked_words
+from utils.subreddit import _contains_blocked_words, get_subreddit_undone
 from utils.videos import check_done
 from utils.voice import sanitize_text
 
